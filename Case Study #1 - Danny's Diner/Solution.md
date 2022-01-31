@@ -246,7 +246,7 @@ WHERE
 
 ---
  
-***The most popular item for customer A was :ramen:, they purchased it 3 times. ***
+***The most popular item for customer A was :ramen:, they purchased it 3 times.***
 
 ***The most popular item for customer B was :curry:, :ramen: and :sushi:, they purchased each dish 2 times.***
 
