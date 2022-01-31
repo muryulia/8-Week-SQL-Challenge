@@ -362,7 +362,7 @@ It means that we need to exclude this date in the WHERE statement.
 ````sql
 SET
   search_path = dannys_diner;
-select
+SELECT
   s.customer_id,
   COUNT(product_name) AS total_number_of_items,
   SUM(price) AS total_purchase_amount
