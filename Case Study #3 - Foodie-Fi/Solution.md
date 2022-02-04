@@ -4,6 +4,7 @@
 
 Danny realised that he wanted to create a new streaming service that only had food related content - something like Netflix but with only cooking shows!
 Danny finds a few smart friends to launch his new startup Foodie-Fi in 2020 and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world!
+
 This case study focuses on using subscription style digital data to answer important business questions.
 
 Full description: [Case Study #3 - Foodie-Fi](https://8weeksqlchallenge.com/case-study-3/)
@@ -182,16 +183,10 @@ SELECT
   plan_name,
   COUNT(plan_name) AS number_of_churned_customers,
   ROUND(
-    (
-      COUNT(plan_name) / customers :: numeric * 100
-    ),
-    1
+    COUNT(plan_name) / customers :: numeric * 100
   ) AS percentage_of_churned_after_trial,
   ROUND(
-    (
-      COUNT(plan_name) / churned_customers :: numeric * 100
-    ),
-    1
+    COUNT(plan_name) / churned_customers :: numeric * 100
   ) AS churned_after_trial_to_all_churned
 FROM
   (
@@ -242,7 +237,7 @@ GROUP BY
 
 | plan_name | number_of_churned_customers | percentage_of_churned_after_trial | churned_after_trial_to_all_churned |
 | --------- | --------------------------- | --------------------------------- | ---------------------------------- |
-| churn     | 92                          | 9.2                               | 30.0                               |
+| churn     | 92                          | 9                                 | 30                                 |
 
 ***92 customers have churned after their initial trial, it is 9% from all customers and 30% of all churned customers***
 
@@ -718,7 +713,9 @@ The query creates a temporary table with 4448 rows. Here is a few rows from the 
 | 20          | 1       | basic monthly | 2020-05-15   | 9.90   | 2             |
 | 20          | 3       | pro annual    | 2020-06-05   | 189.10 | 3             |
 
-### D. Outside The Box Questions
+### D. Outside The Box Questions 
+
+<details><summary> Click to expand :arrow_down: </summary>
 
 The following are open ended questions which might be asked during a technical interview for this case study - there are no right or wrong answers, but answers that make sense from both a technical and a business perspective make an amazing impression!
 
@@ -737,7 +734,7 @@ Let's calculate month over month grow using `lag()` window function:
 ````sql
 SET
   search_path = foodie_fi;
-select
+SELECT
   DATE_TRUNC('month', start_date) AS month,
   COUNT(customer_id) AS current_number_of_customers,
   LAG(COUNT(customer_id), 1) over (
@@ -867,3 +864,4 @@ If a paying user churns then we can ask them about the reasons - why they decide
 And also send them some reminders from time to time.
 
 How to validate: A/B tests, cohort analysis - number of active customers by date (retention day 7, retention day 30 etc.). 
+</details>
