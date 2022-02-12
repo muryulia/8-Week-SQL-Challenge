@@ -1,4 +1,4 @@
-# Case Study #5 - Data Mart
+# Case Study #5 - Data Mart :shopping:
 
 ## Introduction
 
@@ -89,9 +89,10 @@ FROM
 ORDER BY
   calendar_year
   ```
-Data is added to a new temporary table using `SELECT INTO` statement. The original table remains unchanged, change log will be added later.
+Data is added to a new table using `SELECT INTO` statement. The original table remains unchanged, change log will be added later.
 
 Here are the first 20 rows of the new table.
+<details><summary> Click to expand :arrow_down: </summary>
 
 | week_date                | week_number | month_number | calendar_year | region        | platform | segment | age_band     | demographic | customer_type | transactions | sales    | avg_transaction |
 | ------------------------ | ----------- | ------------ | ------------- | ------------- | -------- | ------- | ------------ | ----------- | ------------- | ------------ | -------- | --------------- |
@@ -116,7 +117,9 @@ Here are the first 20 rows of the new table.
 | 2018-09-03T00:00:00.000Z | 36          | 9            | 2018          | CANADA        | Shopify  | C2      | Middle Aged  | Couples     | Existing      | 410          | 77189    | 188.27          |
 | 2018-09-03T00:00:00.000Z | 36          | 9            | 2018          | AFRICA        | Shopify  | unknown | unknown      | unknown     | Existing      | 219          | 43420    | 198.26          |
 
-This temporary table will be used for the further analysis.
+</details>
+
+This table will be used for the further analysis.
 
 ### 2. Data Exploration
 
@@ -158,6 +161,9 @@ GROUP BY
 ORDER BY
   1
   ```
+  
+<details><summary> Click to expand :arrow_down: </summary>
+  
 | week_number    |
 |----------------|
 | 13             | 
@@ -185,6 +191,8 @@ ORDER BY
 | 35             |
 | 36             |
   
+</details>
+
 We can also get the weeks that are out of our table.
 
 First we need to generate all week numbers from 1 to 52. We can do that using the `generate_series()` function.
@@ -217,6 +225,8 @@ ORDER BY
   1
   ```
   
+<details><summary> Click to expand :arrow_down: </summary>
+  
 | missing_weeks  |
 |----------------|
 | 1              | 
@@ -248,7 +258,9 @@ ORDER BY
 | 51             |
 | 52             |
   
-***Weeks 1 - 12 and 37 - 52 are missing from the dataset***
+</details>
+
+  ***Weeks 1 - 12 and 37 - 52 are missing from the dataset***
 
 #### 3. How many total transactions were there for each year in the dataset?
 
@@ -295,6 +307,8 @@ ORDER BY
   2
 ```
 
+<details><summary> Click to expand :arrow_down: </summary>
+  
 | region        | month_number | total_sales  |
 |---------------|--------------|--------------|
 | AFRICA        | 3            | 567767480    |
@@ -346,6 +360,8 @@ ORDER BY
 | USA           | 7            | 760331754    |
 | USA           | 8            | 712002790    |
 | USA           | 9            | 110532368    |
+
+</details>
 
 Here is a visualisation for this query:
 
@@ -409,7 +425,7 @@ ORDER BY
   2,
   1
 ```
-
+  
 | month_number | calendar_year | percentage_of_sales_retail | percentage_of_sales_shopify  |
 |--------------|---------------|----------------------------|------------------------------|
 | 3            | 2018          | 97.9                       | 2.1                          |
@@ -478,7 +494,6 @@ ORDER BY
 | 2020          | Families    | 32.7        |
 | 2020          | unknown     | 38.6        |
 
-
 #### 8. Which age_band and demographic values contribute the most to Retail sales?
 
 ```sql
@@ -515,58 +530,80 @@ SET
   search_path = data_mart;
 SELECT
   age_band,
-  total_sales
+  total_sales,
+  percentage_of_sales
 FROM
   (
     SELECT
       age_band,
       SUM(sales) AS total_sales,
+      round(100 * (SUM(sales) :: numeric / all_sales), 1) AS percentage_of_sales,
       row_number() over (
         ORDER BY
           SUM(sales) DESC
       )
     FROM
-      clean_weekly_sales
+      clean_weekly_sales,
+      LATERAL (
+        SELECT
+          SUM(sales) AS all_sales
+        FROM
+          clean_weekly_sales
+      ) s
     WHERE
       platform = 'Retail'
-      AND age_band != 'unknown'
+      AND demographic != 'unknown'
     GROUP BY
-      1
+      1,
+      all_sales
   ) ts
 WHERE
   row_number = 1
 ```  
   
-***Age band: Retirees - $13,005,266,930***
+| age_band | total_sales | percentage_of_sales  |
+|----------|-------------|----------------------|
+| Retirees | 13005266930 | 31.9                 |
 
 ```sql
 SET
   search_path = data_mart;
 SELECT
   demographic,
-  total_sales
+  total_sales,
+  percentage_of_sales
 FROM
   (
     SELECT
       demographic,
       SUM(sales) AS total_sales,
+      round(100 * (SUM(sales) :: numeric / all_sales), 1) AS percentage_of_sales,
       row_number() over (
         ORDER BY
           SUM(sales) DESC
       )
     FROM
-      clean_weekly_sales
+      clean_weekly_sales,
+      LATERAL (
+        SELECT
+          SUM(sales) AS all_sales
+        FROM
+          clean_weekly_sales
+      ) s
     WHERE
       platform = 'Retail'
       AND demographic != 'unknown'
     GROUP BY
-      1
+      1,
+      all_sales
   ) ts
 WHERE
   row_number = 1
 ```
 
-***Demographic: Families - $12,759,667,763***
+| demographic | total_sales | percentage_of_sales  |
+|-------------|-------------|----------------------|
+| Families    | 12759667763 | 31.3                 |
 
 And one more touch - let's check the age of the families from the previous query:
 
@@ -574,36 +611,50 @@ And one more touch - let's check the age of the families from the previous query
 SET
   search_path = data_mart;
 SELECT
-  demographic, age_band,
-  total_sales
+  demographic,
+  age_band,
+  total_sales,
+  percentage_of_sales
 FROM
   (
     SELECT
-      demographic, age_band,
+      demographic,
+      age_band,
       SUM(sales) AS total_sales,
+      round(100 * (SUM(sales) :: numeric / all_sales), 1) AS percentage_of_sales,
       row_number() over (
         ORDER BY
           SUM(sales) DESC
       )
     FROM
-      clean_weekly_sales
+      clean_weekly_sales,
+      LATERAL (
+        SELECT
+          SUM(sales) AS all_sales
+        FROM
+          clean_weekly_sales
+      ) s
     WHERE
       platform = 'Retail'
       AND demographic != 'unknown'
     GROUP BY
-      1, 2
+      1,
+      2,
+      all_sales
   ) ts
 WHERE
   row_number = 1
 ```
 
-***Demographic and Age Band: Retired families - $6,634,686,916***
+| demographic | age_band | total_sales | percentage_of_sales  |
+|-------------|----------|-------------|----------------------|
+| Families    | Retirees | 6634686916  | 16.3                 | 
 
 We can conclude that the age group of retirees and the demographic group of families and the combined group of retired families contribute the most to retail sales.
 
 #### 9. Can we use the avg_transaction column to find the average transaction size for each year for Retail vs Shopify? If not - how would you calculate it instead?
 
-We can not use avg_transaction column to find the average transaction size per year and sales platform, because we need to aggregate it first. If we aggregate it as an average value the result will be incorrect. In other words, we can not use average of average to calculate the average. Here is the math behind this statement: [https://math.stackexchange.com/questions/95909/why-is-an-average-of-an-average-usually-incorrect/](why is an average of average usually incorrect)
+We can not use avg_transaction column to find the average transaction size per year and sales platform, because we need to aggregate it first. If we aggregate it as an average value the result will be incorrect. In other words, we can not use average of average to calculate the average. Here is the math behind this statement: [why is an average of average usually incorrect](https://math.stackexchange.com/questions/95909/why-is-an-average-of-an-average-usually-incorrect/)
 
 To find the average transaction size we need to calculate the number of transcations per year and sales platform, then the total amount of transactions per year and sales platform. After that we can calculate the average transaction size by dividing the total number of transactions to the total amount of sales.
 
@@ -1001,9 +1052,9 @@ We can see sales growth in 2018, and sales reduction in 2019 and 2020. However, 
 
 ### 4. Bonus Question
 
-Which areas of the business have the highest negative impact in sales metrics performance in 2020 for the 12 week before and after period?
+#### Which areas of the business have the highest negative impact in sales metrics performance in 2020 for the 12 week before and after period?
 
-Let's start from the absolute values first and the compare performance for the 12 week before and after period.
+Let's start from the absolute values first and then compare performance for the 12 week before and after period.
 
 - **region:**
 
@@ -1156,6 +1207,8 @@ ORDER BY
 
 We can see sale drops on Retail platform on the weeks 15, 17, 25 and 32. 
 
+Let's check the total sales for 12 weeks before and after 2020-06-15 by platform:
+
 ```sql
 SET
   search_path = data_mart;
@@ -1227,7 +1280,7 @@ ORDER BY
 | Retail   | 6906861113         | 6738777279        | -168083834      | -2.43                 |
 | Shopify  | 219412034          | 235170474         | 15758440        | 7.18                  |
 
-Sales drop in Retail had the highest negative impact in sales metrics performance in 2020. And we can see that the Shopify platform showed 7.18% growth. However, the growth of the Shopify platform did not compensate for the drop in Retail platform.
+Sales drop in Retail had the highest negative impact in sales metrics performance in 2020. And we can see that the Shopify platform has showed 7.18% growth. However, the growth of the Shopify platform did not compensate for the drop in Retail platform.
 
 - **age_band:**
 
@@ -1263,6 +1316,8 @@ ORDER BY
 ![New query (18)](https://user-images.githubusercontent.com/98699089/153703951-018c16d6-51bc-4d73-ba8b-8fc4a3d836c6.png)
 
 There is sale drop in the 'unknown' age group on the weeks 17, 25 and 32, and in the Retirees age group on the weeks 15 and 17.
+
+Let's check the total sales for 12 weeks before and after 2020-06-15 by age:
 
 ```sql
 SET
@@ -1374,6 +1429,8 @@ ORDER BY
 
 All three demographic groups: 'unknown', Families and Couples showed sales drop on the weeks 17 and 32. Couples and Families also showed a drop on the week 15, and the 'unknown' group - on the week 25.
 
+Let's check the total sales for 12 weeks before and after 2020-06-15 by demographic groups:
+
 ```sql
 SET
   search_path = data_mart;
@@ -1483,6 +1540,8 @@ ORDER BY
 
 We can see that Guests and Existing customers had a sales drop on the weeks 17 and 32, and guest customers also showed sales drop on the week 25.
 
+Let's check the total sales for 12 weeks before and after 2020-06-15 by customer type:
+
 ```sql
 SET
   search_path = data_mart;
@@ -1564,8 +1623,13 @@ In general, packaging issues had a negative sales impact but it was not the only
 
 ### Do you have any further recommendations for Danny’s team at Data Mart or any interesting insights based off this analysis?
 
+<details><summary> Click to expand :arrow_down: </summary>
+  
 Retail sales is the biggest channel and the retired customers is the biggest group of customers. It is important to keep their loyality and try to meet their expectations. 
 
 Shopify sales channel is increasing its share year over year and developing of this channel might be profitable from the future prospective. 
 
 The analysis shows that the loyal customers (existing customers and guest customers) generate the most sales. The sales trend is slopping down. Focusing on new customer acquisition and retention could be another growth point for the company. Middle aged adults is the most lucrative age group to appeal to. They show their interest in the company products and there is a room for further market penetration.
+
+The share of 'unknown' customers in age and demographic groups takes a considerable part, which can make the analysis of age and demographic characteristics incorrect. To make the analysis more accurate we need to reduce the number of 'unknown' records. 
+</details>
