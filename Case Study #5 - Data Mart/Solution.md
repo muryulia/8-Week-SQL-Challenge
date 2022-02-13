@@ -1040,6 +1040,65 @@ group by
 We can see that in 2018 and 2019 sales were growing after week 25, and the year 2020 shows drop in sales after week 25.
 
 Now let's check 12 weeks before and after 2020-06-15:
+
+```sql
+WITH sales_before AS (
+    SELECT
+      calendar_year,
+      SUM(sales) AS total_sales_before
+    FROM
+      clean_weekly_sales,
+      LATERAL(
+        SELECT
+          EXTRACT(
+            WEEK
+            FROM
+              '2020-06-15' :: date
+          ) AS base_week
+      ) bw
+    WHERE
+      week_number between (base_week - 12)
+      AND (base_week - 1)
+    group by
+      1
+  ),
+  sales_after AS (
+    SELECT
+      calendar_year,
+      SUM(sales) AS total_sales_after
+    FROM
+      clean_weekly_sales,
+      LATERAL(
+        SELECT
+          EXTRACT(
+            WEEK
+            FROM
+              '2020-06-15' :: date
+          ) AS base_week
+      ) bw
+    WHERE
+      week_number between (base_week)
+      AND (base_week + 11)
+    group by
+      1
+  )
+SELECT
+  sb.calendar_year,
+  total_sales_before,
+  total_sales_after,
+  total_sales_after - total_sales_before AS change_in_sales,
+  ROUND(
+    100 * (total_sales_after - total_sales_before) :: numeric / total_sales_before,
+    2
+  ) AS percentage_of_change
+FROM
+  sales_before AS sb
+  JOIN sales_after AS sa ON sb.calendar_year = sa.calendar_year
+group by
+  1,
+  2,
+  3
+``` 
   
 | calendar_year | total_sales_before | total_sales_after | change_in_sales | percentage_of_change  |
 |---------------|--------------------|-------------------|-----------------|-----------------------|
