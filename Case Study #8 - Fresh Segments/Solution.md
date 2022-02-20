@@ -1531,7 +1531,7 @@ FROM
   (
     WITH ranking AS (
       SELECT
-        month_year :: varchar,
+        month_year,
         id,
         interest_name,
         avg_composition,
@@ -1609,7 +1609,7 @@ ORDER BY
   1
 ```  
 
-| month_year | interest_name                 | max_index_composition | \_3_month_moving_avg | \_1_month_ago                      | \_2_month_ago                      |
+| month_year | interest_name                 | max_index_composition | \_3_month_moving_avg| \_1_month_ago                     | \_2_month_ago                     |
 | ---------- | ----------------------------- | --------------------- | ------------------- | --------------------------------- | --------------------------------- |
 | 2018-09-01 | Work Comes First Travelers    | 8.26                  | 7.61                | Las Vegas Trip Planners: 7.21     | Las Vegas Trip Planners: 7.36     |
 | 2018-10-01 | Work Comes First Travelers    | 9.14                  | 8.20                | Work Comes First Travelers: 8.26  | Las Vegas Trip Planners: 7.21     |
