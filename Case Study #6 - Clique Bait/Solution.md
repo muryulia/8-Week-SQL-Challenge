@@ -14,7 +14,9 @@ Full description: [Case Study #6 - Clique Bait](https://8weeksqlchallenge.com/ca
 
 Using the following DDL schema details to create an ERD for all the Clique Bait datasets.
 
-[WORK IN PROGRESS]
+![изображение](https://user-images.githubusercontent.com/98699089/154857965-425e41e6-3e77-4021-a5c5-81d522d0dee0.png)
+
+See the full version at dbdiagram.io: [Clique Bait ERD](https://dbdiagram.io/d/6212802e485e433543e61cff)
 
 ### 2. Digital Analysis
 
