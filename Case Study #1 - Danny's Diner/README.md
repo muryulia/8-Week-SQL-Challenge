@@ -2,12 +2,14 @@
 
 <img src="https://user-images.githubusercontent.com/98699089/156034616-ef978d44-af18-4e54-9885-1ac376a009bf.png" width="500">
 
+## Available Data
+
 Danny has shared with you 3 key datasets for this case study:
 - `sales`;
 - `menu`;
 - `members`.
 
-## Table 1: `sales`
+### Table 1: `sales`
 
 The `sales` table captures all `customer_id` level purchases with an corresponding `order_date` and `product_id` information for when and what menu items were ordered.
 
@@ -29,7 +31,7 @@ The `sales` table captures all `customer_id` level purchases with an correspondi
 | C           | 2021-01-01 | 3          |
 | C           | 2021-01-07 | 3          |
 
-## Table 2: `menu`
+### Table 2: `menu`
 
 The `menu` table maps the `product_id` to the actual `product_name` and price of each menu item.
 
@@ -39,7 +41,7 @@ The `menu` table maps the `product_id` to the actual `product_name` and price of
 | 2          | curry        | 15    |
 | 3          | ramen        | 12    |
 
-## Table 3: `members`
+### Table 3: `members`
 
 The final members table captures the `join_date` when a `customer_id` joined the beta version of the Danny’s Diner loyalty program.
 
