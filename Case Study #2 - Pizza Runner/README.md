@@ -106,7 +106,7 @@ This table contains all of the `topping_name` values with their corresponding `t
 
 ## Entity Relationship Diagram
 
-![изображение](https://user-images.githubusercontent.com/98699089/156216627-0de4d7ff-6376-4aee-9d7f-1fd6433fd587.png)
+![изображение](https://user-images.githubusercontent.com/98699089/156217477-8e823838-4a49-4936-9206-afa3cdeda699.png)
 
 ## Table of Contents
 
