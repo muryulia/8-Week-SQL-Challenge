@@ -1,5 +1,7 @@
 # Case Study #5 - Data Mart  :shopping:
 
+<img src="https://user-images.githubusercontent.com/98699089/156627083-8535d998-15ef-4c28-b339-978eeb54574a.png" width="500">
+
 Data Mart is Danny’s latest venture and after running international operations for his online supermarket that specialises in fresh produce - Danny is asking for your support to analyse his sales performance.
 
 ## Available Data
