@@ -1,5 +1,7 @@
 # Case Study #3 - Foodie-Fi :avocado:
 
+<img src="https://user-images.githubusercontent.com/98699089/156627293-3fc9484a-9903-408e-85f2-a95fcba757cd.png" width="500">
+
 Danny has shared the data design for Foodie-Fi and also short descriptions on each of the database tables - our case study focuses on only 2 tables but there will be a challenge to create a new table for the Foodie-Fi team.
 
 All datasets exist within the `foodie_fi` database schema.
